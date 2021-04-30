@@ -1,0 +1,29 @@
+{
+  "name": "websocket-server",
+  "version": "0.1.0",
+  "description": "A websocket server.",
+  "main": "src/main.js",
+  "author": "Aeryle",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "express": "^4.17.1",
+    "socket.io": "^4.0.1",
+    "socket.io-client": "^4.0.1",
+    "typescript": "^4.2.4",
+    "ws": "^7.4.4"
+  },
+  "scripts": {
+    "dev": "nodemon",
+    "dev:main": "npm run dev .",
+    "dev:client1": "npm run dev src/client1.js",
+    "dev:client2": "npm run dev src/client2.js"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.41",
+    "@types/socket.io": "^2.1.13",
+    "@types/socket.io-client": "^1.4.36",
+    "nodemon": "^2.0.7"
+  }
+}
