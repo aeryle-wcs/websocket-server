@@ -96,13 +96,20 @@ io.on("connection", function connection(socket) {
     }
   });
 
-  socket.on("message:delete", function messageDelete(recipient, messageId) {
-    const index = messages[socket.data.username][recipient][messageId];
+  socket.on("message:delete", function messageDelete(recipient, index) {
+    const removedMessage = messages[socket.data.username][recipient].splice(
+      index,
+      1
+    )[0];
 
-    if (index) {
-      messages[socket.data.username][recipient].splice(index, 1);
-      messages[recipient][socket.data.username].splice(index, 1);
+    const recipientIndex = messages[recipient][socket.data.username].findIndex(
+      (msg) => msg.date === removedMessage.date
+    );
+
+    if (recipientIndex > -1) {
+      messages[recipient][socket.data.username].splice(recipientIndex, 1);
     }
+
     const recipientSocket = [...io.sockets.sockets].find(
       ([, s]) => s.data.username === recipient
     );
