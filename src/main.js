@@ -41,6 +41,12 @@ io.on("connection", function connection(socket) {
     );
   });
 
+  socket.on("chat:delete", function chatDelete(recipient) {
+    messages[socket.data.username][recipient] = [];
+
+    socket.emit("chat:delete");
+  });
+
   socket.on("message:create", function messageCreate(recipient, content) {
     const date = Date.now();
 
@@ -69,7 +75,6 @@ io.on("connection", function connection(socket) {
     if (!messages?.[recipient]?.[socket.data.username]) {
       createMessage(recipient, socket.data.username);
     } else {
-      console.log("add recipient");
       messages[recipient][socket.data.username].push({
         from: socket.data.username,
         content,
@@ -86,6 +91,26 @@ io.on("connection", function connection(socket) {
       recipientSocket[1].emit("message:new");
       recipientSocket[1].emit(
         "message:create",
+        messages[recipient][socket.data.username]
+      );
+    }
+  });
+
+  socket.on("message:delete", function messageDelete(recipient, messageId) {
+    const index = messages[socket.data.username][recipient][messageId];
+
+    if (index) {
+      messages[socket.data.username][recipient].splice(index, 1);
+      messages[recipient][socket.data.username].splice(index, 1);
+    }
+    const recipientSocket = [...io.sockets.sockets].find(
+      ([, s]) => s.data.username === recipient
+    );
+
+    socket.emit("message:delete", messages[socket.data.username][recipient]);
+    if (recipientSocket) {
+      recipientSocket[1].emit(
+        "message:delete",
         messages[recipient][socket.data.username]
       );
     }
