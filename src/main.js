@@ -124,23 +124,4 @@ io.on("connection", function connection(socket) {
   });
 });
 
-//   socket.on('sendMessage', async function sendMessage({ sender, recipient, content }) {
-//     if (!messages?.[sender]?.[recipient]) {
-//       createMessage(recipient, sender);
-//     } else {
-//       logger.debug('La conversation existe');
-//
-//       messages?.[recipient]?.[sender].push({ from: sender, content, date });
-//     }
-//
-//     socket.emit('returnMessages', messages[sender][recipient]);
-//
-//     console.log([ ...io.sockets.sockets ].length);
-//
-//     const otherUser = [ ...(io.sockets.sockets) ].find(socket => socket.data.username === recipient);
-//     otherUser?.emit('returnMessages', messages[sender][recipient]);
-//
-//     console.log(messages[sender][recipient], messages[recipient][sender]);
-//   });
-
 server.listen(8080);
