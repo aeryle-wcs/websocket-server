@@ -15,7 +15,7 @@
     "ws": "^7.4.4"
   },
   "scripts": {
-    "start": "npm start",
+    "start": "node .",
     "dev": "nodemon",
     "dev:main": "npm run dev .",
     "dev:client1": "npm run dev src/client1.js",
