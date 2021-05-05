@@ -1,7 +1,7 @@
 const server = require("http").createServer();
 const Logger = require("./utils/Logger");
 const io = require("socket.io")(server, {
-  cors: { origin: "http://localhost:3000" },
+  cors: { origin: "*" },
 });
 
 const { onlineUsers, messages } = require("./utils/CONSTANTS");
