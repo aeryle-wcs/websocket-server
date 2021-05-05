@@ -86,7 +86,11 @@ io.on("connection", function connection(socket) {
       ([, s]) => s.data.username === recipient
     );
 
-    socket.emit("message:create", messages[socket.data.username][recipient]);
+    socket.emit(
+      "message:create",
+      recipient,
+      messages[socket.data.username][recipient]
+    );
     if (recipientSocket) {
       recipientSocket[1].emit("message:new");
       recipientSocket[1].emit(
@@ -114,7 +118,11 @@ io.on("connection", function connection(socket) {
       ([, s]) => s.data.username === recipient
     );
 
-    socket.emit("message:delete", messages[socket.data.username][recipient]);
+    socket.emit(
+      "message:delete",
+      recipient,
+      messages[socket.data.username][recipient]
+    );
     if (recipientSocket) {
       recipientSocket[1].emit(
         "message:delete",
