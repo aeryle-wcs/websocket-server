@@ -7,6 +7,8 @@ const io = require("socket.io")(server, {
 const { onlineUsers, messages } = require("./utils/CONSTANTS");
 const logger = new Logger();
 
+const openChats = new Map();
+
 io.on("connection", function connection(socket) {
   console.log(
     [...io.sockets.sockets].length,
@@ -35,10 +37,16 @@ io.on("connection", function connection(socket) {
   });
 
   socket.on("chat:open", function chatOpen(recipient) {
+    openChats.set(socket.data.username, recipient);
+
     socket.emit(
       "chat:open",
       messages?.[socket.data.username]?.[recipient] || []
     );
+  });
+
+  socket.on("chat:close", function chatClose() {
+    openChats.delete(socket.data.username);
   });
 
   socket.on("chat:delete", function chatDelete(recipient) {
@@ -48,6 +56,16 @@ io.on("connection", function connection(socket) {
   });
 
   socket.on("message:create", function messageCreate(recipient, content) {
+    let recipientEvent;
+    let startSlice = 0;
+
+    if (openChats.get(recipient) === socket.data.username) {
+      recipientEvent = "message:create";
+    } else {
+      recipientEvent = "message:new";
+      startSlice = -1;
+    }
+
     const date = Date.now();
 
     const createMessage = (sender, recipient) => {
@@ -87,11 +105,15 @@ io.on("connection", function connection(socket) {
     );
 
     socket.emit("message:create", messages[socket.data.username][recipient]);
+
+    const slicedMessages = messages[recipient][socket.data.username].slice(
+      startSlice
+    );
+
     if (recipientSocket) {
-      recipientSocket[1].emit("message:new");
       recipientSocket[1].emit(
-        "message:create",
-        messages[recipient][socket.data.username]
+        recipientEvent,
+        recipientEvent === "message:new" ? slicedMessages[0] : slicedMessages
       );
     }
   });
@@ -115,13 +137,17 @@ io.on("connection", function connection(socket) {
     );
 
     socket.emit("message:delete", messages[socket.data.username][recipient]);
+
     if (recipientSocket) {
       recipientSocket[1].emit(
         "message:delete",
         messages[recipient][socket.data.username]
       );
     }
+
+    console.log(messages[socket.data.username][recipient]);
+    console.log(messages[recipient][socket.data.username]);
   });
 });
 
-server.listen(process.env.PORT || 8080);
+server.listen(+process.env.PORT || 8080);
